@@ -1,4 +1,5 @@
 <?php
+include 'security_headers.php';
 session_start();
 include "config/db.php";
 ?>
