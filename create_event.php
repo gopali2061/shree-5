@@ -11,49 +11,54 @@ include "config/db.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-$title = $_POST["title"];
-$description = $_POST["description"];
-$date = $_POST["date"];
-$user_id = $_SESSION["user_id"];
+    $title = $_POST["title"];
+    $description = $_POST["description"];
+    $date = $_POST["date"];
+    $user_id = $_SESSION["user_id"];
 
-$sql = "INSERT INTO events (title, description, event_date, created_by)
-VALUES ('$title', '$description', '$date', '$user_id')";
+    // ✅ Prepared statement (fixes your SQL error)
+    $stmt = $conn->prepare("INSERT INTO events (title, description, event_date, created_by) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("sssi", $title, $description, $date, $user_id);
 
-$conn->query($sql);
+    if ($stmt->execute()) {
+        echo "<p style='color:green;'>Event created successfully!</p>";
+    } else {
+        echo "<p style='color:red;'>Error: " . $stmt->error . "</p>";
+    }
 
-echo "Event created successfully!";
+    $stmt->close();
 }
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-<title>Create Event</title>
-<link rel="stylesheet" href="css/style.css">
+    <title>Create Event</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
 <div class="container">
 
-<h2>Create Campus Event</h2>
+    <h2>Create Campus Event</h2>
 
-<form method="POST">
+    <form method="POST">
 
-<p>Title</p>
-<input type="text" name="title" required>
+        <p>Title</p>
+        <input type="text" name="title" required>
 
-<p>Description</p>
-<textarea name="description" required></textarea>
+        <p>Description</p>
+        <textarea name="description" required></textarea>
 
-<p>Date</p>
-<input type="date" name="date" required>
+        <p>Date</p>
+        <input type="date" name="date" required>
 
-<br><br>
+        <br><br>
 
-<button type="submit">Create Event</button>
+        <button type="submit">Create Event</button>
 
-</form>
+    </form>
 
 </div>
 
